@@ -119,7 +119,18 @@ if ($result_transaksi && $result_transaksi->num_rows > 0) {
         .sidebar a i { width: 24px; text-align:center; }
         .sidebar a:hover { background:rgba(255,255,255,0.15); color:white; transform:translateX(5px); }
         .sidebar a.active { background:#0077b6; color:white; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+        .header-top {
+            background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6f 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1rem 1.5rem;
+        }
+        .header-top .d-flex { gap: 12px; }
         .content { padding: 2rem 1.5rem; }
+        .main-wrapper { display: flex; flex-direction: column; }
         .page-title { font-weight:700; color:#1e2a3e; border-left:5px solid #0077b6; padding-left:15px; margin-bottom:1.8rem; }
         .laporan-card {
             background: white; border-radius: 28px; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
@@ -151,6 +162,7 @@ if ($result_transaksi && $result_transaksi->num_rows > 0) {
             .sidebar { height:auto; position:relative; }
             .content { padding:1rem; }
             .summary-box p { font-size:1.2rem; }
+            .header-top { padding: 0.75rem 1rem; }
         }
     </style>
 </head>
@@ -166,8 +178,18 @@ if ($result_transaksi && $result_transaksi->num_rows > 0) {
             <a href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
 
-        <main class="col-md-10 content">
-            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+        <main class="col-md-10 main-wrapper">
+            <!-- Header Freeze -->
+            <div class="header-top">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Laporan Global</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content">
                 <h2 class="page-title"><i class="fas fa-chart-line me-2"></i> Laporan Keuangan Global</h2>
                 <div class="text-muted"><i class="fas fa-calendar-alt me-1"></i> <?php echo date('d F Y'); ?></div>
             </div>
@@ -290,6 +312,7 @@ if ($result_transaksi && $result_transaksi->num_rows > 0) {
                 </div>
             </div>
             <footer><i class="fas fa-chart-line"></i> Sistem Informasi Koperasi Sekolah | Laporan keuangan realtime</footer>
+            </div>
         </main>
     </div>
 </div>

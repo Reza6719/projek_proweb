@@ -94,7 +94,20 @@ if ($tabungan_table && $tabungan_table->num_rows > 0) {
         .sidebar a i { width: 24px; text-align:center; }
         .sidebar a:hover { background:rgba(255,255,255,0.15); color:white; transform:translateX(5px); }
         .sidebar a.active { background:#0077b6; color:white; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+        .header-top {
+            background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6f 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1rem 1.5rem;
+        }
+        .header-top .d-flex { gap: 12px; }
+        .header-top .text-muted { color: rgba(255,255,255,0.7) !important; }
+        .header-top strong { color: white; }
         .content { padding: 2rem 1.5rem; }
+        .main-wrapper { display: flex; flex-direction: column; }
         .page-title { font-weight:700; color:#1e2a3e; border-left:5px solid #0077b6; padding-left:15px; margin-bottom:1.8rem; }
         .stat-card {
             border: none; border-radius: 24px; background: white; transition: all 0.3s;
@@ -116,6 +129,7 @@ if ($tabungan_table && $tabungan_table->num_rows > 0) {
         @media (max-width:768px) {
             .sidebar { height:auto; position:relative; }
             .content { padding:1rem; }
+            .header-top { padding: 0.75rem 1rem; }
         }
     </style>
 </head>
@@ -131,33 +145,41 @@ if ($tabungan_table && $tabungan_table->num_rows > 0) {
             <a href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
 
-        <main class="col-md-10 content">
-            <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-                <h2 class="page-title"><i class="fas fa-chart-line me-2"></i> Dashboard Admin</h2>
-                <div class="d-flex align-items-center">
-                    <div class="me-3 text-end">
-                        <div class="text-muted small">Selamat datang,</div>
-                        <strong><?= htmlspecialchars($nama_lengkap) ?></strong>
+        <main class="col-md-10 main-wrapper">
+            <!-- Header Freeze -->
+            <div class="header-top">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i> Dashboard Admin</h5>
                     </div>
-                    <!-- Dropdown Foto Profil -->
-                    <div class="dropdown">
-                        <?php if ($foto_url): ?>
-                            <img src="<?= $foto_url ?>" alt="Foto" class="profile-avatar-sm" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?php else: ?>
-                            <div class="profile-avatar-sm-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        <?php endif; ?>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile">
-                            <li><a class="dropdown-item" href="profile.php"><i class="fas fa-id-card"></i> Lihat Profil</a></li>
-                            <li><a class="dropdown-item" href="edit_profile.php"><i class="fas fa-edit"></i> Edit Profil</a></li>
-                            <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog"></i> Pengaturan</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 text-end">
+                            <div class="text-muted small">Selamat datang,</div>
+                            <strong><?= htmlspecialchars($nama_lengkap) ?></strong>
+                        </div>
+                        <!-- Dropdown Foto Profil -->
+                        <div class="dropdown">
+                            <?php if ($foto_url): ?>
+                                <img src="<?= $foto_url ?>" alt="Foto" class="profile-avatar-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?php else: ?>
+                                <div class="profile-avatar-sm-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            <?php endif; ?>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile">
+                                <li><a class="dropdown-item" href="profile.php"><i class="fas fa-id-card"></i> Lihat Profil</a></li>
+                                <li><a class="dropdown-item" href="edit_profile.php"><i class="fas fa-edit"></i> Edit Profil</a></li>
+                                <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog"></i> Pengaturan</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Main Content -->
+            <div class="content">
 
             <div class="row g-4 mb-5">
                 <div class="col-md-6 col-lg-3">
@@ -221,6 +243,7 @@ if ($tabungan_table && $tabungan_table->num_rows > 0) {
                 </div>
             </div>
             <footer><i class="fas fa-chart-line"></i> Sistem Informasi Koperasi Sekolah | Panel Admin</footer>
+            </div>
         </main>
     </div>
 </div>
