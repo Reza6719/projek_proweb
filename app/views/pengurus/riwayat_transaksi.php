@@ -69,6 +69,20 @@ if ($result && $result->num_rows > 0) {
         .table-custom { border-radius:20px; overflow:hidden; }
         .table-custom thead th { background:#f8fafc; border-bottom:2px solid #e2e8f0; }
         footer { text-align:center; margin-top:2rem; color:#7f8c8d; font-size:0.8rem; }
+        
+        /* Desain Header Laporan Khusus PDF */
+        #pdfHeader {
+            display: none; /* Disembunyikan di tampilan Web */
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px double #1a4a6f;
+            color: #1e2a3e;
+        }
+        #pdfHeader h2 { font-weight: 800; font-size: 28px; margin: 0; color: #0f2b3d; letter-spacing: 1px; }
+        #pdfHeader p { margin: 2px 0; font-size: 14px; color: #555; }
+        #pdfHeader .report-title { margin-top: 15px; font-weight: 700; font-size: 18px; color: #0077b6; text-transform: uppercase; }
+
         @media (max-width:768px) { .sidebar { height:auto; position:relative; } .content { padding:1rem; } }
     </style>
 </head>
@@ -86,65 +100,124 @@ if ($result && $result->num_rows > 0) {
             <a href="settings.php"><i class="fas fa-cog"></i> Pengaturan</a>
             <a href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
+        
         <main class="col-md-10 content">
             <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
                 <h2 class="page-title"><i class="fas fa-history me-2"></i> Riwayat Transaksi</h2>
                 <div class="text-muted"><i class="fas fa-calendar-alt me-1"></i> <?= date('d F Y') ?></div>
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-3"><div class="summary-box"><h5>Total Transaksi</h5><p>Rp <?= number_format($total_transaksi,0,',','.') ?></p></div></div>
-                <div class="col-md-3"><div class="summary-box"><h5>Tabungan</h5><p>Rp <?= number_format($total_tabungan,0,',','.') ?></p></div></div>
-                <div class="col-md-3"><div class="summary-box"><h5>Pinjaman</h5><p>Rp <?= number_format($total_pinjaman,0,',','.') ?></p></div></div>
-                <div class="col-md-3"><div class="summary-box"><h5>Denda</h5><p>Rp <?= number_format($total_denda,0,',','.') ?></p></div></div>
+            <!-- Area yang akan di-export ke PDF -->
+            <div id="printArea">
+                <!-- Desain Kop Surat & Judul (Hanya muncul saat export PDF) -->
+                <div id="pdfHeader">
+                    <h2><i class="fas fa-hand-holding-usd me-2"></i> KOPERASI SEKOLAH SEJAHTERA</h2>
+                    <p>Jl. Pendidikan No. 123, Kota Pelajar, Indonesia 12345</p>
+                    <p>Telp: (021) 1234567 | Email: admin@koperasisekolah.sch.id</p>
+                    <div class="report-title">LAPORAN RIWAYAT TRANSAKSI</div>
+                    <p style="font-style: italic;">Dicetak pada: <?= date('d F Y, H:i') ?> WIB</p>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3"><div class="summary-box"><h5>Total Transaksi</h5><p>Rp <?= number_format($total_transaksi,0,',','.') ?></p></div></div>
+                    <div class="col-md-3"><div class="summary-box"><h5>Tabungan</h5><p>Rp <?= number_format($total_tabungan,0,',','.') ?></p></div></div>
+                    <div class="col-md-3"><div class="summary-box"><h5>Pinjaman</h5><p>Rp <?= number_format($total_pinjaman,0,',','.') ?></p></div></div>
+                    <div class="col-md-3"><div class="summary-box"><h5>Denda</h5><p>Rp <?= number_format($total_denda,0,',','.') ?></p></div></div>
+                </div>
+
+                <div class="card p-3 mb-4">
+                    <div class="table-responsive">
+                        <table id="tabelTransaksi" class="table table-custom table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Siswa</th>
+                                    <th>NIS</th>
+                                    <th>Jenis</th>
+                                    <th>Jumlah</th>
+                                    <th>Tanggal</th>
+                                    <th>Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($rows)): ?>
+                                    <?php foreach ($rows as $r): ?>
+                                        <tr>
+                                            <td><?= $r['id'] ?></td>
+                                            <td><?= htmlspecialchars($r['username']) ?></td>
+                                            <td><?= htmlspecialchars($r['id_siswa']) ?></td>
+                                            <td>
+                                                <?php if ($r['jenis'] == 'tabungan'): ?>
+                                                    <span class="badge-jenis badge-tabungan"><i class="fas fa-arrow-up"></i> Tabungan</span>
+                                                <?php elseif ($r['jenis'] == 'pinjaman'): ?>
+                                                    <span class="badge-jenis badge-pinjaman"><i class="fas fa-arrow-down"></i> Pinjaman</span>
+                                                <?php else: ?>
+                                                    <span class="badge-jenis badge-denda"><i class="fas fa-exclamation-triangle"></i> Denda</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>Rp <?= number_format($r['jumlah'],0,',','.') ?></td>
+                                            <td><?= date('d-m-Y', strtotime($r['tanggal'])) ?></td>
+                                            <td><?= htmlspecialchars($r['keterangan'] ?? '-') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="7" class="text-center text-muted py-4">Belum ada transaksi</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- Akhir printArea -->
+
+            <!-- Tombol Export dipindah ke bawah tabel -->
+            <div class="d-flex justify-content-end gap-3 mt-2">
+                <button onclick="exportExcel()" class="btn btn-success px-4 rounded-pill shadow-sm">
+                    <i class="fas fa-file-excel me-2"></i> Download Excel
+                </button>
+                <button onclick="exportPDF()" class="btn btn-danger px-4 rounded-pill shadow-sm">
+                    <i class="fas fa-file-pdf me-2"></i> Download PDF
+                </button>
             </div>
 
-            <div class="card p-3">
-                <div class="table-responsive">
-                    <table class="table table-custom table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Siswa</th>
-                                <th>NIS</th>
-                                <th>Jenis</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($rows)): ?>
-                                <?php foreach ($rows as $r): ?>
-                                    <tr>
-                                        <td><?= $r['id'] ?></td>
-                                        <td><?= htmlspecialchars($r['username']) ?></td>
-                                        <td><?= htmlspecialchars($r['id_siswa']) ?></td>
-                                        <td>
-                                            <?php if ($r['jenis'] == 'tabungan'): ?>
-                                                <span class="badge-jenis badge-tabungan"><i class="fas fa-arrow-up"></i> Tabungan</span>
-                                            <?php elseif ($r['jenis'] == 'pinjaman'): ?>
-                                                <span class="badge-jenis badge-pinjaman"><i class="fas fa-arrow-down"></i> Pinjaman</span>
-                                            <?php else: ?>
-                                                <span class="badge-jenis badge-denda"><i class="fas fa-exclamation-triangle"></i> Denda</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>Rp <?= number_format($r['jumlah'],0,',','.') ?></td>
-                                        <td><?= date('d-m-Y', strtotime($r['tanggal'])) ?></td>
-                                        <td><?= htmlspecialchars($r['keterangan'] ?? '-') ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr><td colspan="7" class="text-center text-muted py-4">Belum ada transaksi</td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
             <footer><i class="fas fa-history"></i> Sistem Informasi Koperasi Sekolah | Semua riwayat transaksi</footer>
         </main>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Library untuk Export Excel (SheetJS) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Library untuk Export PDF (html2pdf) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Script Export -->
+<script>
+    function exportExcel() {
+        let table = document.getElementById("tabelTransaksi");
+        let wb = XLSX.utils.table_to_book(table, {sheet: "Riwayat Transaksi"});
+        XLSX.writeFile(wb, "Laporan_Riwayat_Transaksi.xlsx");
+    }
+
+    function exportPDF() {
+        let element = document.getElementById("printArea");
+        let header = document.getElementById("pdfHeader");
+        
+        // Memunculkan header khusus (Kop Surat) sebelum diexport
+        header.style.display = "block";
+        
+        let opt = {
+            margin:       0.4,
+            filename:     'Laporan_Riwayat_Transaksi.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+        
+        // Render PDF, kemudian sembunyikan kembali header setelah selesai
+        html2pdf().set(opt).from(element).save().then(function() {
+            header.style.display = "none";
+        });
+    }
+</script>
 </body>
 </html>
