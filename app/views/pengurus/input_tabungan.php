@@ -151,7 +151,8 @@ if (isset($_POST['simpan'])) {
                 <div class="col-lg-8">
                     <div class="card-form">
                         <form method="POST">
-                            <div class="mb-3">
+                            <form action="POST">
+                                <div class="mb-3">
                                 <label class="form-label"><i class="fas fa-id-card me-1"></i> ID Siswa</label>
                                 <div class="input-group">
                                     <input type="text" name="id_siswa" class="form-control" placeholder="Masukkan ID siswa" value="<?php echo htmlspecialchars($_SESSION['temp_id_siswa'] ?? ''); ?>" required>
@@ -161,6 +162,7 @@ if (isset($_POST['simpan'])) {
                                     <div class="info-badge"><i class="fas fa-user-check text-success"></i> Nama: <strong><?php echo htmlspecialchars($nama_siswa); ?></strong></div>
                                 <?php endif; ?>
                             </div>
+                            </form>
                             <div class="mb-4">
                                 <label class="form-label"><i class="fas fa-money-bill-wave me-1"></i> Jumlah Simpanan (Rp)</label>
                                 <div class="input-group">
